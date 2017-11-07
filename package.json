@@ -1,0 +1,25 @@
+{
+  "name": "macktez",
+  "version": "1.0.0",
+  "description": "Run bash scripts in Electron",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "keywords": [
+    "bash",
+    "electron"
+  ],
+  "author": "Emery Anderson",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^1.7.5",
+    "electron-packager": "^9.0.0"
+  },
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "node-schedule": "^1.2.5",
+    "watchr": "^3.0.1"
+  }
+}
