@@ -19,7 +19,7 @@ app.on('ready', function () {
         'title-bar-style': 'hidden'
     });
     mainWindow.loadURL(`file://${__dirname}/index.html`);
-    // mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
     mainWindow.on('closed', function () {
         mainWindow = null;
     });
@@ -40,8 +40,15 @@ ipcMain.on('asynchronous-message', function (event, arg) {
     console.log(parentcontainer);
 
     const run = spawn(`${__dirname}/bin/${arg}.sh`)
+    var count = 0
 
     run.stdout.on('data', (data) => {
+        for (let index = 0; index < data.length; index++) {
+            if (data.includes('\r')) {
+                count += 1
+            }
+        }
+
         event.sender.send('asynchronous-reply', {
             data,
             bashOutput
@@ -56,6 +63,7 @@ ipcMain.on('asynchronous-message', function (event, arg) {
     })
     
     run.on('close', (code) => {
+        console.log(count)
         if (code !== 0) {
             event.sender.send('asynchronous-reply', {
                 data: code,
