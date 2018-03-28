@@ -1,10 +1,9 @@
+const { spawn, exec } = require('child_process')
 const ipc = require('electron').ipcRenderer
-const {
-  StringDecoder
-} = require('string_decoder')
+const { StringDecoder } = require('string_decoder')
 const decoder = new StringDecoder('utf8')
 const $ = jQuery = require('jquery')
-var count = 0
+
 
 document.getElementById('buttons').addEventListener('click', (element, event) => {
   console.log(element.target.id);
@@ -18,9 +17,19 @@ ipc.on('asynchronous-reply', function (event, arg) {
   let pinToBottom = document.getElementById(arg.bashOutput)
   document.getElementById(arg.bashOutput).textContent += decoder.write(arg.data)
 
+})
 
-  $('#bashOutput2').append(decoder.write(arg.data))
-  var c = $(arg.bashOutput).parent()
 
-  // pinToBottom.scrollTop = pinToBottom.scrollHeight
+const script = spawn('./bin/clients/1619/2017/ltocontrol/bashScripts/statTape1.sh')
+
+script.stderr.on('data', (data) => {
+  document.getElementById('debugMessages').innerText += decoder.write(data)
+})
+
+script.stdout.on('data', (data) => {
+  document.getElementById('bashOutput1').textContent += decoder.write(data)
+})
+
+script.on('error', (error) => {
+  console.log(error);
 })

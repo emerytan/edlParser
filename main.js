@@ -48,7 +48,6 @@ ipcMain.on('asynchronous-message', function (event, arg) {
                 count += 1
             }
         }
-
         event.sender.send('asynchronous-reply', {
             data,
             bashOutput
