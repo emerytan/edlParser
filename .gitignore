@@ -5,4 +5,4 @@ node_modules
 build
 ./scripts/bin/tmp/frames.txt
 ./scripts/bin/tmp/shots.txt
-
+tmp
