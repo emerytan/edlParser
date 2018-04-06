@@ -3,6 +3,7 @@ node_modules
 *~
 .DS_Store
 build
-./scripts/bin/tmp/frames.txt
-./scripts/bin/tmp/shots.txt
+frames.txt
+shots.txt
 tmp
+test
