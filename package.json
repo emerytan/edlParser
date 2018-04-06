@@ -1,11 +1,12 @@
 {
-  "name": "macktez",
+  "name": "bashtag",
   "version": "1.0.0",
   "description": "Run bash scripts in Electron",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-packager ./ --arch=x64 --platform=darwin --out build --overwrite"
   },
   "keywords": [
     "bash",
