@@ -22,7 +22,7 @@ whereAmi="tmp"
 
 function parseEDL () {
 	
-	awk '{ if ( $1 ~ /[0-9]{6}/ && $2 ~ /[A-Z][0-9]{3}C[0-9]{3}/ ) 
+	awk '/^[0-9]{6}/ { if ( $2 ~ /^[A-E][0-9]{3}C[0-9]{3}/ ) 
 	printf "%s %s %s ", $2, $5, $6 } \
 	/CLIP\ NAME/ { printf "%s \n", $(NF-1) }' "$thisEDL" > "$projectBase"/tmp/shots.txt 
 	
@@ -73,25 +73,27 @@ function locateFiles () {
 	handle=15
 	sleep 1
 	while read sourceName inPoint outPoint clipName
-	do 
-		echo -e "Source File:\t$sourceName"
-	 	echo -e "in:\t\t$inPoint"
-		echo -e "out:\t\t$outPoint"
-		deliveredPath=""$destPath"/${clipName}"
-		inHandle=$(expr ${inPoint} - ${handle})
-		outHandle=$(expr ${outPoint} + ${handle})
-		frameCount=$(expr $outPoint - $inPoint)
-		echo -e "Clip name:\t$clipName"		
-		echo -e "Frames:\t\t$frameCount"
-		echo "$pullsPath"/${sourceName}/${sourceName}.0${i}.dpx
-		sleep 5
-		mkdir -p "$deliveredPath"
-#		echo -e "rename preview: ${sourceName}.[${inPoint}]-[${outPoint}].dpx\t--->\t${clipName}.[${leadingZeros}${sequence}]-[${leadingZeros}$(expr $sequence + $frameCount)].dpx\n"
-		for ((i=${inHandle};i<${outHandle};i++)); do echo "cp -aL "$srcPath"/"$sourceName"/${sourceName}.0${i}.dpx "$deliveredPath"/${clipName}.0${i}.dpx"; done
+	do
+		if [[ -e "$srcPath"/"$sourceName" ]]; then
+			echo -e "Source File:\t$sourceName"
+			echo -e "in:\t\t$inPoint"
+			echo -e "out:\t\t$outPoint"
+			deliveredPath=""$destPath"/${clipName}"
+			inHandle=$(expr ${inPoint} - ${handle})
+			outHandle=$(expr ${outPoint} + ${handle})
+			frameCount=$(expr $outPoint - $inPoint)
+			echo -e "Clip name:\t$clipName"		
+			echo -e "Frames:\t\t$frameCount"
+			echo ""$srcPath"/${sourceName}/${sourceName}.0${inHandle}.dpx"
+			mkdir -p "$deliveredPath"
+			for ((i=${inHandle};i<${outHandle};i++)); do 
+				cp -aLv "$srcPath"/"$sourceName"/${sourceName}.0${i}.dpx "$deliveredPath"/${clipName}.0${i}.dpx
+			done
+		else
+			echo -e "\nSource File:\t$sourceName -- NOT FOUND\n" 
+			sleep 2
+		fi
 	done < $whereAmi/frames.txt
-
-	
-
 }
 
 function edlCheck () {
