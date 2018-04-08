@@ -18,6 +18,19 @@ var userOptions = {
 
 }
 
+
+window.onload = function () {
+	ipc.send('init')
+}
+
+
+ipc.on('app path', (event, message) => {
+	userOptions.thisPath = message.toString()
+	document.getElementById('debugMessages').innerText = 'App initialized'
+})
+
+
+
 function parse(a, param) {
 	const script = spawn('bash', [a, param])
 
@@ -102,9 +115,11 @@ document.getElementById('getDestination').addEventListener('click', (element, ev
 
 
 document.getElementById('runScript').addEventListener('click', (element, event) => {
-	$('#bashOutput1').text('cross your fingers....')
-	const runEDL = spawn('bash', [
-		'scripts/bin/gcEDLparser.sh',
+
+	document.getElementById('bashOutput1').innerText = ''
+
+	let scriptPath = path.join(userOptions.thisPath, 'scripts/bin/gcEDLparser.sh')
+	const runEDL = spawn(scriptPath, [
 		userOptions.EDL,
 		userOptions.basePath,
 		userOptions.srcPath,
@@ -128,9 +143,14 @@ document.getElementById('runScript').addEventListener('click', (element, event) 
 	})
 
 	runEDL.on('exit', (code) => {
-		let pin = document.getElementById('bashOutput1')
-		pin.innerText += decoder.write(`Exit with code: ${code.toString()}`)
-		pin.scrollTop = pin.scrollHeight
+		if (code.toString() == '0') {
+			let pin = document.getElementById('bashOutput1')
+			pin.innerText += decoder.write(`done...`)
+			pin.scrollTop = pin.scrollHeight
+		} else {
+			$('#debugMessages').text('Something went wrong... FUCK').css('color', 'red')
+		}
+
 	})
 
 

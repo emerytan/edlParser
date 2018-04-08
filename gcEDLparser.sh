@@ -4,9 +4,21 @@
 # December 2017
 
 
-
 redRegex="[A-Z][0-9]{3}_C[0-9]{3}"
 arriRegex="[A-Z][0-9]{3}C[0-9]{3}"
+thisEDL="$1"
+projectBase="$2"
+cd "$projectBase"
+srcPath="$3"
+destPath="$4"
+
+if [[ -e tmp ]]; then
+	echo "temp directory exists"
+else
+	mkdir -p tmp
+fi
+
+whereAmi="tmp"
 
 function parseEDL () {
 	
@@ -96,32 +108,17 @@ function edlCheck () {
 }
 
 
-if [[ "$1" -eq "undefined" ]]; then
-	echo -e "\nWhoops!"
-	echo -e "\nno user input to work with"
-	echo -e "Make sure you set base path, get EDL, set source, set dest..."
-	echo -e "\nHave a nice day!\n"
-	exit
-else
+if [[ "$1" != "" ]]; then
 	echo -e "Goldcrest Post EDL Parser"
 	sleep 1
 	echo -n "validating file entry..."
-fi
-
-thisEDL="$1"
-projectBase="$2"
-cd "$projectBase"
-srcPath="$3"
-destPath="$4"
-
-if [[ -e tmp ]]; then
-	echo "temp directory exists"
 else
-	mkdir -p tmp
+	echo -e "\nWhoops!"
+	echo -e "\nno EDL file to work with"
+	echo -e "command usage:\tgcEDLparser [ any_EDL_file.edl ]"
+	echo -e "\nHave a nice day!\n"
+	exit
 fi
-
-whereAmi="tmp"
-
 
 
 

@@ -24,9 +24,15 @@ app.on('ready', function () {
     });
 });
 
+
+ipcMain.on('init', (event, message) => {
+    event.sender.send('app path', app.getAppPath())
+})
+
 app.on('window-all-closed', function () {
     if (process.platform != 'darwin') {
         app.quit();
     }
 });
+
 
