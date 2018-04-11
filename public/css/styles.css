@@ -1,10 +1,6 @@
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', monospace;    
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     background-color: rgb(32, 32, 32);
-    color: rgb(128, 128, 128)
-}
-
-pre {
     color: rgb(128, 128, 128)
 }
 
@@ -24,6 +20,25 @@ pre {
     color: rgb(128, 128, 128)
 }
 
+.btn.disabled, .btn:disabled {
+    opacity: 0.2;
+}
+
+.btn-dark {
+    color: #fff;
+    background-color: #343a40;
+    border-color: #ccc
+}
+
+.eta-button {
+    margin: 20px auto;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    height: 50px;
+    width: 80%;
+    font-size: .8em
+}
 
 th,
 td {
@@ -31,8 +46,7 @@ td {
     color: cadetblue
 }
 
-#feedback {
-   
+#feedback {  
     margin: 1% auto;
     padding: 0 1%
 }
@@ -54,13 +68,15 @@ pre {
     overflow-y: scroll;
     overflow-x: hidden;
     color: chartreuse;
-    font-size: .8em;
+    font-size: .7em;
 }
 
 #testContainer {
     height: 5%;
     width: auto;
-    margin: 1% 1%
+    margin: 1% 1%;
+    font-size: .7em;
+    color: cadetblue
 }
 
 .indentText {
@@ -69,14 +85,6 @@ pre {
     color: cyan
 }
 
-.eta-button {
-    margin: 20px auto;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    height: 50px;
-    width: 80%
-}
 
 /* width */
 

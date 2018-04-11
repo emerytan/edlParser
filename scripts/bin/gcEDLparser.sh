@@ -5,8 +5,6 @@
 
 
 
-redRegex="[A-Z][0-9]{3}_C[0-9]{3}"
-arriRegex="[A-Z][0-9]{3}C[0-9]{3}"
 
 function parseEDL () {
 	
@@ -39,15 +37,9 @@ function parseEDL () {
 
 
 function locateFiles () { 
-	# echo -en "enter renumber startpoint: "
-	# read sequence
-	# numberOfChars=$(echo ${sequence} | wc -c)
-	# numberOfChars=$(expr $numberOfChars - 1)
-	# echo -e "number of sequence chars: ${numberOfChars}"
-	# echo -en "enter leading zeros: "
-	# read leadingZeros
 
 	cd "$projectBase"
+
 	currentDir=$(pwd)
 
 	if [[ "$currentDir" != "$projectBase" ]]; then
@@ -55,6 +47,7 @@ function locateFiles () {
 		exit 
 	else
 		echo "in project base Dir"
+		open "$destPath"
 	fi
 
 	echo -e "\nStarting Copy\n"
@@ -79,16 +72,19 @@ function locateFiles () {
 			done
 		else
 			echo -e "\nSource File:\t$sourceName -- NOT FOUND\n" 
-			sleep 2
+			sleep 1
 		fi
-	done < $whereAmi/frames.txt
+	done < "$projectBase"/tmp/frames.txt
+
+	exit
+	
 }
 
 function edlCheck () {
 	isEDL=$(awk 'NR <= 1 { print $1 }' "$thisEDL")
 	if [ "$isEDL" = "TITLE:" ]; then
 	  echo -e "\tEDL file looks OK"
-	  parseEDL "$thisEDL" && echo -e "parse EDL exit status 0\n"
+	  parseEDL "$thisEDL"
 	else
 		echo -e "not an EDL"
 		exit
@@ -96,7 +92,7 @@ function edlCheck () {
 }
 
 
-if [[ "$1" -eq "undefined" ]]; then
+if [[ "$1" == "undefined" ]]; then
 	echo -e "\nWhoops!"
 	echo -e "\nno user input to work with"
 	echo -e "Make sure you set base path, get EDL, set source, set dest..."
@@ -107,6 +103,9 @@ else
 	sleep 1
 	echo -n "validating file entry..."
 fi
+
+redRegex="[A-Z][0-9]{3}_C[0-9]{3}"
+arriRegex="[A-Z][0-9]{3}C[0-9]{3}"
 
 thisEDL="$1"
 projectBase="$2"
@@ -123,8 +122,6 @@ fi
 whereAmi="tmp"
 
 
-
-
 if [ -e "$1" ]; then
 	sleep 1
 	echo -e "\t"$thisEDL" passed..."
@@ -136,8 +133,3 @@ else
 fi
 
 exit
-
-# script should ask to rename by clipname or locator
-# option to use source frame numbers or renumber...
-# append gcLink to moved directory  
-

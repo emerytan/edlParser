@@ -27,35 +27,14 @@ window.onload = function () {
 ipc.on('app path', (event, message) => {
 	userOptions.thisPath = message.toString()
 	document.getElementById('debugMessages').innerText = 'App initialized'
+	document.getElementById('getEDL').disabled = true
+	document.getElementById('getSource').disabled = true
+	document.getElementById('getDestination').disabled = true
+	document.getElementById('runScript').disabled = true
 })
 
-
-
-function parse(a, param) {
-	const script = spawn('bash', [a, param])
-
-	script.on('error', (error) => {
-		console.log(error);
-		$('#bashOutput1').append(decoder.write(error))
-	})
-
-	script.stdout.on('data', (data) => {
-		let pin = document.getElementById('bashOutput1')
-		pin.innerText += decoder.write(data)
-		pin.scrollTop = pin.scrollHeight
-	})
-
-	script.stderr.on('data', (data) => {
-		$('#bashOutput1').append(decoder.write(data))
-	})
-
-	script.on('exit', (code) => {
-		$('#bashOutput1').append(decoder.write(code))
-	})
-}
-
-
 document.getElementById('setBasePath').addEventListener('click', (element, event) => {
+	document.getElementById('bashOutput1').innerText = ''	
 	dialog.showOpenDialog({
 		buttonLabel: 'Set Base Path',
 		properties: ['openDirectory']
@@ -63,8 +42,9 @@ document.getElementById('setBasePath').addEventListener('click', (element, event
 		if (selection) {
 			userOptions.basePath = selection[0]
 			document.getElementById('basePath').innerText = selection
+			document.getElementById('getEDL').disabled = false	
 		} else {
-			alert('pussy!')
+			alert('You must select a base path to enable other functions')
 		}
 	})
 }, false)
@@ -82,8 +62,10 @@ document.getElementById('getEDL').addEventListener('click', (element, event) => 
 		if (selection) {
 			userOptions.EDL = selection[0]
 			document.getElementById('EDL').innerText = path.basename(selection[0])
+			document.getElementById('getSource').disabled = false
+			document.getElementById('getDestination').disabled = false		
 		} else {
-			alert('chicken')
+			alert('you must select an EDL to enable other functions')
 		}
 
 	})
@@ -98,6 +80,9 @@ document.getElementById('getSource').addEventListener('click', (element, event) 
 	}, (selection) => {
 		userOptions.srcPath = path.relative(userOptions.basePath, selection[0])
 		document.getElementById('srcPath').innerText = userOptions.srcPath
+		if (userOptions.destPath) {
+			document.getElementById('runScript').disabled = false
+		}1
 	})
 }, false)
 
@@ -110,6 +95,9 @@ document.getElementById('getDestination').addEventListener('click', (element, ev
 	}, (selection) => {
 		userOptions.destPath = path.relative(userOptions.basePath, selection[0])
 		document.getElementById('destPath').innerText = userOptions.destPath
+		if (userOptions.srcPath) {
+			document.getElementById('runScript').disabled = false
+		}
 	})
 }, false)
 
@@ -117,13 +105,18 @@ document.getElementById('getDestination').addEventListener('click', (element, ev
 document.getElementById('runScript').addEventListener('click', (element, event) => {
 
 	document.getElementById('bashOutput1').innerText = ''
+	var myButtons = document.getElementsByTagName('button')
+	
+	for (let index = 0; index < myButtons.length; index++) {
+		myButtons[index].disabled = true
+	}
 
 	let scriptPath = path.join(userOptions.thisPath, 'scripts/bin/gcEDLparser.sh')
 	const runEDL = spawn(scriptPath, [
 		userOptions.EDL,
 		userOptions.basePath,
 		userOptions.srcPath,
-		userOptions.destPath
+		userOptions. destPath
 	])
 
 	runEDL.on('error', (error) => {
@@ -143,6 +136,7 @@ document.getElementById('runScript').addEventListener('click', (element, event) 
 	})
 
 	runEDL.on('exit', (code) => {
+		document.getElementById('setBasePath').disabled = false
 		if (code.toString() == '0') {
 			let pin = document.getElementById('bashOutput1')
 			pin.innerText += decoder.write(`done...`)
@@ -152,17 +146,5 @@ document.getElementById('runScript').addEventListener('click', (element, event) 
 		}
 
 	})
-
-
-
 }, false)
 
-
-// document.getElementById('buttons').addEventListener('click', (element, event) => {
-//   let clickedButton = element.target.id
-//   if (clickedButton === 'getEDL') {
-//     let scriptPath = path.relative(process.cwd(), './scripts/gcEDLparser.sh')
-//     let scriptArg = path.resolve(process.cwd(), './scripts/TTF_PIX LOCK_021518_V4_VFXPULLS.edl')
-//     parse(scriptPath, scriptArg)
-//   }
-// }, false)
