@@ -4,13 +4,10 @@
 # December 2017
 
 
-
-
 function parseEDL () {
 	
-	awk '/^[0-9]{6}/ { if ( $2 ~ /^[A-E][0-9]{3}C[0-9]{3}/ ) 
-	printf "%s %s %s ", $2, $5, $6 } \
-	/CLIP\ NAME/ { printf "%s \n", $(NF-1) }' "$thisEDL" > "$projectBase"/tmp/shots.txt 
+	awk '/^[0-9]{6}/ { printf "%s %s %s ", $2, $5, $6 } \
+	/LOC/ { printf "%s \n", $(NF) }' "$thisEDL" > "$projectBase"/tmp/shots.txt 
 	
 	echo -e "\nStarting SMPTE to frames conversion..."
 	
@@ -31,15 +28,15 @@ function parseEDL () {
 	sleep 2
 	cat "$projectBase"/tmp/frames.txt
 	echo -e "starting conversion..."	
-	locateFiles
+	# locateFiles
+	exit
 
 }
 
 
 function locateFiles () { 
-
+	
 	cd "$projectBase"
-
 	currentDir=$(pwd)
 
 	if [[ "$currentDir" != "$projectBase" ]]; then
@@ -50,25 +47,34 @@ function locateFiles () {
 		open "$destPath"
 	fi
 
+	#	echo -en "enter renumber startpoint: "
+	#	read sequence
+	#	numberOfChars=$(echo ${sequence} | wc -c)
+	#	numberOfChars=$(expr $numberOfChars - 1)
+	#	echo -e "number of sequence chars: ${numberOfChars}"
+	#	echo -en "enter leading zeros: "
+	#	read leadingZeros
 	echo -e "\nStarting Copy\n"
-	handle=15
+	handle=12
 	sleep 1
 	while read sourceName inPoint outPoint clipName
 	do
 		if [[ -e "$srcPath"/"$sourceName" ]]; then
+			sequence="1"		
 			echo -e "Source File:\t$sourceName"
 			echo -e "in:\t\t$inPoint"
 			echo -e "out:\t\t$outPoint"
 			deliveredPath=""$destPath"/${clipName}"
 			inHandle=$(expr ${inPoint} - ${handle})
 			outHandle=$(expr ${outPoint} + ${handle})
-			frameCount=$(expr $outPoint - $inPoint)
+			frameCount=$(expr ${outPoint} - ${inPoint})
 			echo -e "Clip name:\t$clipName"		
 			echo -e "Frames:\t\t$frameCount"
 			echo ""$srcPath"/${sourceName}/${sourceName}.0${inHandle}.dpx"
 			mkdir -p "$deliveredPath"
 			for ((i=${inHandle};i<${outHandle};i++)); do 
-				cp -aLv "$srcPath"/"$sourceName"/${sourceName}.0${i}.dpx "$deliveredPath"/${clipName}.0${i}.dpx
+				cp -aLv "$srcPath"/"$sourceName"/${sourceName}.$(printf "%08d" ${i}).dpx "$deliveredPath"/${clipName}.$(printf "%08d" ${sequence}).dpx
+				(( sequence ++ ))
 			done
 		else
 			echo -e "\nSource File:\t$sourceName -- NOT FOUND\n" 
@@ -77,7 +83,7 @@ function locateFiles () {
 	done < "$projectBase"/tmp/frames.txt
 
 	exit
-	
+
 }
 
 function edlCheck () {
@@ -106,21 +112,19 @@ fi
 
 redRegex="[A-Z][0-9]{3}_C[0-9]{3}"
 arriRegex="[A-Z][0-9]{3}C[0-9]{3}"
-
 thisEDL="$1"
 projectBase="$2"
 cd "$projectBase"
 srcPath="$3"
 destPath="$4"
+sequence="$5"
+
 
 if [[ -e tmp ]]; then
 	echo "temp directory exists"
 else
 	mkdir -p tmp
 fi
-
-whereAmi="tmp"
-
 
 if [ -e "$1" ]; then
 	sleep 1

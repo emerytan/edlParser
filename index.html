@@ -10,8 +10,10 @@
 	<link href="./public/css/styles.css" rel="stylesheet">
 	<script>
 		var $ = jQuery = require('jquery')
-</script>
-<script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	</script>
+	<script>
+		require('bootstrap')
+	</script>
 </head>
 
 <body>
@@ -25,6 +27,9 @@
 						<button id="getSource" class="btn btn-large btn-dark eta-button">Set Source</button>
 						<button id="getDestination" class="btn btn-large btn-dark eta-button">Set Destination</button>
 						<br>
+						<div>
+							<form action=""></form>
+						</div>
 						<br>
 						<button id="runScript" class="btn btn-large btn-dark eta-button">Start Copy</button>
 					</div>
@@ -33,14 +38,14 @@
 					<div id="feedback">
 						<table>
 							<tr>
-								<th>Base Path</th>
 								<th>EDL</th>
+								<th>Base Path</th>
 								<th>Soruce Path</th>
 								<th>Destination Path</th>
 							</tr>
 							<tr>
-								<td id="basePath">...</td>
 								<td id="EDL">...</td>
+								<td id="basePath">...</td>
 								<td id="srcPath">...</td>
 								<td id="destPath">...</td>
 							</tr>
