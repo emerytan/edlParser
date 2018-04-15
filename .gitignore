@@ -3,5 +3,13 @@ node_modules
 *~
 .DS_Store
 build
+<<<<<<< HEAD
 dist
 
+=======
+*frames.txt
+*shots.txt
+*tmp
+*test
+play.js
+>>>>>>> bashgui

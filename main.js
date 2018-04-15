@@ -19,11 +19,15 @@ app.on('ready', function () {
         'title-bar-style': 'hidden'
     });
     mainWindow.loadURL(`file://${__dirname}/index.html`);
-    mainWindow.webContents.openDevTools()
     mainWindow.on('closed', function () {
         mainWindow = null;
     });
 });
+
+
+ipcMain.on('init', (event, message) => {
+    event.sender.send('app path', app.getAppPath())
+})
 
 app.on('window-all-closed', function () {
     if (process.platform != 'darwin') {
@@ -32,47 +36,3 @@ app.on('window-all-closed', function () {
 });
 
 
-ipcMain.on('asynchronous-message', function (event, arg) {
-    let bashOutput = arg
-    bashOutput = bashOutput.replace("Script", "Output")
-    let parentcontainer = bashOutput.replace('bashOutput', 'container')
-
-    console.log(parentcontainer);
-
-    const run = spawn(`${__dirname}/bin/${arg}.sh`)
-    var count = 0
-
-    run.stdout.on('data', (data) => {
-        for (let index = 0; index < data.length; index++) {
-            if (data.includes('\r')) {
-                count += 1
-            }
-        }
-        event.sender.send('asynchronous-reply', {
-            data,
-            bashOutput
-        })
-    })
-
-    run.stderr.on('data', (data) => {
-        event.sender.send('asynchronous-reply', {
-            data,
-            bashOutput
-        })
-    })
-    
-    run.on('close', (code) => {
-        console.log(count)
-        if (code !== 0) {
-            event.sender.send('asynchronous-reply', {
-                data: code,
-                bashOutput
-            })
-        } else {
-            event.sender.send('asynchronous-reply', {
-                data: code,
-                bashOutput                
-            })
-        }
-    })
-})
