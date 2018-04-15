@@ -2,3 +2,6 @@ node_modules
 *.icns
 *~
 .DS_Store
+build
+dist
+
